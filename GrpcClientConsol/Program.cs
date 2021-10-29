@@ -12,7 +12,17 @@ namespace GrpcClientConsol
         {
             //AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
 
-            /*
+            await SayHelloAsync_Rpc();
+
+            //await SayHelloStream_Rpc();
+
+            //await SayHelloReplyStream_Rpc();
+
+        }
+
+
+        static async Task SayHelloAsync_Rpc()
+        {
             using var channel = GrpcChannel.ForAddress("https://localhost:5001");
             var client = new Greeter.GreeterClient(channel);
 
@@ -20,10 +30,10 @@ namespace GrpcClientConsol
 
             Console.WriteLine(reply.Message);
             Console.ReadLine();
-            */
+        }
 
-
-            /*
+        static async Task SayHelloStream_Rpc()
+        {
             using var channel = GrpcChannel.ForAddress("https://localhost:5001");
             var client = new Greeter.GreeterClient(channel);
 
@@ -40,7 +50,7 @@ namespace GrpcClientConsol
             });
 
             //Цикл для бесконечной отправки сообщения на сервер
-            while(true)
+            while (true)
             {
                 var result = Console.ReadLine();
                 if (String.IsNullOrWhiteSpace(result))
@@ -55,9 +65,10 @@ namespace GrpcClientConsol
             await readTask;
 
             Console.ReadLine();
-            */
+        }
 
-
+        static async Task SayHelloReplyStream_Rpc()
+        {
             using var channel = GrpcChannel.ForAddress("https://localhost:5001");
             var client = new Greeter.GreeterClient(channel);
 
