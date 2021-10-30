@@ -42,5 +42,27 @@ namespace GrpcService
                 Message = "Hello " + request.Name + DateTime.UtcNow
             });            
         }
+
+        public override async Task<HelloReply> SayHelloRequestStream(IAsyncStreamReader<HelloRequest> requestStream,  ServerCallContext context)
+        {
+            /* Var.1
+            await foreach (var request1 in requestStream.ReadAllAsync())
+            {
+                return await Task.FromResult(new HelloReply
+                {
+                    Message = "Hello " + request1.Name
+                });
+            }
+            return new HelloReply() { Message = "Hello " + requestStream.Current };
+            */
+
+            //Var.2
+            var responce = "";
+            await foreach (var message in requestStream.ReadAllAsync())
+            {
+                responce = message.Name;
+            }
+            return new HelloReply() { Message = "Hello " + responce };
+        }
     }
 }

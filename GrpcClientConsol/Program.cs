@@ -12,11 +12,13 @@ namespace GrpcClientConsol
         {
             //AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
 
-            await SayHelloAsync_Rpc();
+            //await SayHelloAsync_Rpc();
 
             //await SayHelloStream_Rpc();
 
             //await SayHelloReplyStream_Rpc();
+
+            await SayHelloRequestStream_Rpc();
 
         }
 
@@ -84,6 +86,40 @@ namespace GrpcClientConsol
             });
 
             await readTask;
+            Console.ReadLine();
+        }
+
+        static async Task SayHelloRequestStream_Rpc()
+        {
+            var client = new Greeter.GreeterClient(GrpcChannel.ForAddress("https://localhost:5001"));
+            using var call = client.SayHelloRequestStream();    //streaming клиент (объект)
+
+            //await call.RequestStream.WriteAsync(new HelloRequest { Name = "Привет сервер" });
+
+
+            //var request = Console.ReadLine();
+            var request = "";
+            for (var i = 0; i < 3; i++)
+            {
+                request += "Виктор ";
+                await call.RequestStream.WriteAsync(new HelloRequest { Name = request });
+            }
+
+
+            //Цикл для бесконечной отправки сообщения на сервер
+            /*while (true)
+            {
+                var request = Console.ReadLine();
+                if (String.IsNullOrWhiteSpace(request))
+                    break;
+
+                await call.RequestStream.WriteAsync(new HelloRequest() { Name = request });
+            }*/
+
+            await call.RequestStream.CompleteAsync(); //Сообщение серверу, что клиент закончил отправку сообщений
+            var response = await call; //Ответ сервера
+
+            Console.WriteLine(response.Message);
             Console.ReadLine();
         }
     }
