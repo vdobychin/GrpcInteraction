@@ -14,7 +14,7 @@ namespace GrpcClientConsol
         {
             //AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
 
-            //await SayHelloAsync_Rpc();
+            await SayHelloAsync_Rpc();
 
             //await SayHelloStream_Rpc();
 
@@ -22,7 +22,7 @@ namespace GrpcClientConsol
 
             //await SayHelloRequestStream_Rpc();
 
-            await HealthCheck_Rpc();    //docker run --rm -it -p 5001:80 grpcservice
+            //await HealthCheck_Rpc();    //docker run --rm -it -p 5001:80 grpcservice
 
             Console.ReadLine();
         }
@@ -133,7 +133,7 @@ namespace GrpcClientConsol
                 var health = await healthClient.CheckAsync(new HealthCheckRequest { Service = "Живой" });
                 Console.WriteLine($"Health Status: {health.Status}");
                 Thread.Sleep(5000);
-            }            
+            }
         }
     }
 }
