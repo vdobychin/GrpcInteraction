@@ -16,6 +16,7 @@ namespace GrpcService
             {
                 options.Interceptors.Add<LoggingInterceptor>();
             });
+            services.AddHealthChecks();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -31,6 +32,7 @@ namespace GrpcService
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapGrpcService<GreeterService>();
+                endpoints.MapGrpcService<HealthCheckService>();
 
                 endpoints.MapGet("/", async context =>
                 {

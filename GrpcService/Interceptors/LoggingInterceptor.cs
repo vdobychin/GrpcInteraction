@@ -13,6 +13,15 @@ namespace GrpcService.Interceptors
         {
             _logger = logger;
         }
+        
+        //SayHello
+        public override async Task<TResponse> UnaryServerHandler<TRequest, TResponse>(TRequest request, ServerCallContext context, UnaryServerMethod<TRequest, TResponse> continuation)
+        {
+            _logger.Log(LogLevel.Information, $"{DateTime.UtcNow}: Start {context.Method}");
+            var unaryServerHandler = await base.UnaryServerHandler(request, context, continuation);
+            _logger.Log(LogLevel.Information, $"{DateTime.UtcNow}: End {context.Method}");
+            return unaryServerHandler;
+        }
 
         //SayHelloStream
         public override async Task DuplexStreamingServerHandler<TRequest, TResponse>(IAsyncStreamReader<TRequest> requestStream, IServerStreamWriter<TResponse> responseStream, ServerCallContext context,
@@ -31,14 +40,14 @@ namespace GrpcService.Interceptors
             _logger.Log(LogLevel.Information, $"{DateTime.UtcNow}: End {context.Method}");
         }
 
-        //SayHello
-        public override async Task<TResponse> UnaryServerHandler<TRequest, TResponse>(TRequest request, ServerCallContext context, UnaryServerMethod<TRequest, TResponse> continuation)
+        //SayHelloRequestStream
+        public override async Task<TResponse> ClientStreamingServerHandler<TRequest, TResponse>(IAsyncStreamReader<TRequest> requestStream, ServerCallContext context, ClientStreamingServerMethod<TRequest, TResponse> continuation)
         {
             _logger.Log(LogLevel.Information, $"{DateTime.UtcNow}: Start {context.Method}");
-            var unaryServerHandler = await base.UnaryServerHandler(request, context, continuation);
+            var asyncStreamingServerHandler = await base.ClientStreamingServerHandler(requestStream, context, continuation);
             _logger.Log(LogLevel.Information, $"{DateTime.UtcNow}: End {context.Method}");
-            return unaryServerHandler;
+            return asyncStreamingServerHandler;
         }
-
+        
     }
 }

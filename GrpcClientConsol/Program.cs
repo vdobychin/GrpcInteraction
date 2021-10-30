@@ -1,7 +1,9 @@
 ﻿using Grpc.Core;
+using Grpc.Health.V1;
 using Grpc.Net.Client;
 using ProtoLib;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace GrpcClientConsol
@@ -18,8 +20,11 @@ namespace GrpcClientConsol
 
             //await SayHelloReplyStream_Rpc();
 
-            await SayHelloRequestStream_Rpc();
+            //await SayHelloRequestStream_Rpc();
 
+            await HealthCheck_Rpc();    //docker run --rm -it -p 5001:80 grpcservice
+
+            Console.ReadLine();
         }
 
 
@@ -31,7 +36,6 @@ namespace GrpcClientConsol
             var reply = await client.SayHelloAsync(new HelloRequest() { Name = "Виктор" }); //Ответ сервера
 
             Console.WriteLine(reply.Message);
-            Console.ReadLine();
         }
 
         static async Task SayHelloStream_Rpc()
@@ -65,8 +69,6 @@ namespace GrpcClientConsol
             await call.RequestStream.CompleteAsync();
             //Дожидаемся всех ответов от сервера
             await readTask;
-
-            Console.ReadLine();
         }
 
         static async Task SayHelloReplyStream_Rpc()
@@ -86,7 +88,6 @@ namespace GrpcClientConsol
             });
 
             await readTask;
-            Console.ReadLine();
         }
 
         static async Task SayHelloRequestStream_Rpc()
@@ -120,7 +121,19 @@ namespace GrpcClientConsol
             var response = await call; //Ответ сервера
 
             Console.WriteLine(response.Message);
-            Console.ReadLine();
+        }
+
+        static async Task HealthCheck_Rpc()
+        {
+            using var channel = GrpcChannel.ForAddress("https://localhost:5001");  //для контейнера http
+            var healthClient = new Health.HealthClient(channel);
+
+            while (true)
+            {
+                var health = await healthClient.CheckAsync(new HealthCheckRequest { Service = "Живой" });
+                Console.WriteLine($"Health Status: {health.Status}");
+                Thread.Sleep(5000);
+            }            
         }
     }
 }
